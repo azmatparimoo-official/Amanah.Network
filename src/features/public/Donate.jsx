@@ -30,7 +30,7 @@ export default function Donate() {
       },
       prefill: { name: "Donor", email: donorEmail }
     };
-
+  console.log("Payment options:", options); // Debug log to check options before opening Razorpay
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
