@@ -55,7 +55,10 @@ export default function Donate() {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
             donorEmail,
-            amount: donationAmount
+            amount: donationAmount,
+            donorName: donorName,
+            mobileNumber: mobileNumber,
+            projectTitle: "General Donation"
           });
           if (verifyRes.data.status === 'success')
             setMessage({ type: 'success', text: 'Payment successful and verified!' });
