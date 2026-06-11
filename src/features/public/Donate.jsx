@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect} from 'react';
 import api from '../../api';
 
 export default function Donate() {
@@ -7,6 +7,12 @@ export default function Donate() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [donorName, setDonorName] = useState('');
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
   const handlePayment = async (amount) => {
     const { data: order } = await api.post('/api/payment/create-order',
        { 
