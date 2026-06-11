@@ -7,6 +7,7 @@ export default function Donate() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [donorName, setDonorName] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -18,6 +19,7 @@ export default function Donate() {
        { 
         amount: amount,
         donorEmail: donorEmail,
+        mobileNumber: mobileNumber, // Placeholder, replace with actual mobile number input if neede
         donorName: donorName,
         projectTitle: "General Donation"
        });
@@ -112,6 +114,18 @@ export default function Donate() {
        required 
        className="w-full p-4 border-2 border-black focus:border-[#C5A059] outline-none"/>
       </div>
+      <div>
+  <label className="block text-xs font-bold uppercase tracking-widest mb-2">Mobile Number</label>
+  <input 
+    type="tel" 
+    value={mobileNumber} 
+    onChange={(e) => setMobileNumber(e.target.value.replace(/[^0-9]/g, ''))}
+    placeholder="Enter 10-digit number"
+    maxLength="10"
+    required 
+    className="w-full p-4 border-2 border-black focus:border-[#C5A059] outline-none transition-colors"
+  />
+</div>
         <div>
           <label className="block text-xs font-bold uppercase tracking-widest mb-2">Confirm Your Registered Email Address</label>
           <input 
