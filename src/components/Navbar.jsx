@@ -15,6 +15,7 @@ export default function Navbar() {
     { to: "/donate", label: "Donate Portal" },
     { to: "/request-aid", label: "Request Aid Portal" },
     { to: "/timeline", label: "Achievements" },
+    {to:"/terms", label:"Terms"}
   ];
 
   return (
