@@ -49,6 +49,7 @@ export default function Donate() {
       order_id: order.id,
       handler: async (response) => {
         try {
+          console.log("Response received from Razorpay:", response); // CHECK THIS IN CONSOLE
           const verifyRes = await api.post('/api/payment/verify', {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
@@ -61,7 +62,7 @@ export default function Donate() {
           else
             setMessage({ type: 'error', text: 'Payment verification failed.' });
         } catch (err) {
-          console.error(err);
+          console.error("Verification error:", err);
           setMessage({ type: 'error', text: 'Verification error.' });
         } finally {
           setIsLoading(false);
