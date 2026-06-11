@@ -38,10 +38,20 @@ export default function Donate() {
         else
           setMessage({ type: 'error', text: 'Payment verification failed. Please contact support.' });
       },
+      modal: {
+        ondismiss: function() {
+          setIsLoading(false); // Reset button when user closes the popup
+        }
+      },
       prefill: { name: "Donor", email: donorEmail }
     };
   console.log("Payment options:", options); // Debug log to check options before opening Razorpay
     const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      setIsLoading(false); // Stop loading
+      setMessage({ type: 'error', text: `Payment Failed: ${response.error.description}` });
+      console.error("Razorpay Error:", response.error);
+    });
     rzp.open();
   };
 
