@@ -33,7 +33,10 @@ export default function Donate() {
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_signature: response.razorpay_signature,
         });
-        if (verifyRes.data.status === 'success') alert("Payment Successful!");
+        if (verifyRes.data.status === 'success')
+          setMessage({ type: 'success', text: 'Payment successful and verified!' });
+        else
+          setMessage({ type: 'error', text: 'Payment verification failed. Please contact support.' });
       },
       prefill: { name: "Donor", email: donorEmail }
     };
@@ -56,9 +59,6 @@ export default function Donate() {
 
     try {
       await handlePayment(Number(amount));
-      setMessage({ type: 'success', text: 'Thank you for your donation!' });
-      setDonorEmail('');
-      setAmount('');
     } catch (err) {
       console.error(err);
       setMessage({ 
