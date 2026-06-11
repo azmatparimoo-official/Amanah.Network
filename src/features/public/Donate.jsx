@@ -8,7 +8,12 @@ export default function Donate() {
   const [message, setMessage] = useState({ type: '', text: '' });
 
   const handlePayment = async (amount) => {
-    const { data: order } = await api.post('/api/payment/create-order', { amount });
+    const { data: order } = await api.post('/api/payment/create-order',
+       { 
+        amount: amount,
+        donorEmail: donorEmail,
+        projectTitle: "General Donation"
+       });
 
     const options = {
       key: "YOUR_RAZORPAY_KEY_ID", 
