@@ -32,6 +32,8 @@ export default function Donate() {
           razorpay_order_id: response.razorpay_order_id,
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_signature: response.razorpay_signature,
+          donorEmail: donorEmail,
+          amount: amount
         });
         if (verifyRes.data.status === 'success')
           setMessage({ type: 'success', text: 'Payment successful and verified!' });
