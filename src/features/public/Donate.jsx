@@ -6,12 +6,13 @@ export default function Donate() {
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-
+  const [donorName, setDonorName] = useState('');
   const handlePayment = async (amount) => {
     const { data: order } = await api.post('/api/payment/create-order',
        { 
         amount: amount,
         donorEmail: donorEmail,
+        donorName: donorName,
         projectTitle: "General Donation"
        });
 
@@ -84,6 +85,15 @@ export default function Donate() {
       )}
 
       <form onSubmit={handleDonation} className="space-y-8 max-w-xl">
+        <div>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2">Full Name</label>
+        <input 
+        type="text" 
+        value={donorName} 
+       onChange={(e) => setDonorName(e.target.value)} 
+       required 
+       className="w-full p-4 border-2 border-black focus:border-[#C5A059] outline-none"/>
+      </div>
         <div>
           <label className="block text-xs font-bold uppercase tracking-widest mb-2">Confirm Your Registered Email Address</label>
           <input 
