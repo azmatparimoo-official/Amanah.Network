@@ -1,4 +1,4 @@
-import { useState,useEffect} from 'react';
+import { useState } from 'react';
 import api from '../../api';
 
 export default function Donate() {
@@ -8,70 +8,87 @@ export default function Donate() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [donorName, setDonorName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-  
-  const handlePayment = async (amount) => {
-    const { data: order } = await api.post('/api/payment/create-order',
-       { 
-        amount: amount,
-        donorEmail: donorEmail,
-        mobileNumber: mobileNumber, // Placeholder, replace with actual mobile number input if neede
-        donorName: donorName,
-        projectTitle: "General Donation"
-       });
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async (donationAmount) => {
+    // 1. Ensure script is loaded FIRST
+    const isLoaded = await loadRazorpayScript();
+    if (!isLoaded) {
+      alert("Payment gateway failed to load. Please check your connection.");
+      return;
+    }
+
+    // 2. Call backend to get order details
+    const { data: order } = await api.post('/api/payment/create-order', {
+      amount: donationAmount,
+      donorEmail,
+      mobileNumber,
+      donorName,
+      projectTitle: "General Donation"
+    });
+
+    // 3. Setup Razorpay options
     const options = {
-      key: "YOUR_RAZORPAY_KEY_ID", 
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Use your env variable here!
       amount: order.amount,
       currency: "INR",
       order_id: order.id,
       handler: async (response) => {
-        const verifyRes = await api.post('/api/payment/verify', {
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-          donorEmail: donorEmail,
-          amount: amount
-        });
-        if (verifyRes.data.status === 'success')
-          setMessage({ type: 'success', text: 'Payment successful and verified!' });
-        else
-          setMessage({ type: 'error', text: 'Payment verification failed. Please contact support.' });
-      },
-      modal: {
-        ondismiss: function() {
-          setIsLoading(false); // Reset button when user closes the popup
+        try {
+          const verifyRes = await api.post('/api/payment/verify', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            donorEmail,
+            amount: donationAmount
+          });
+          if (verifyRes.data.status === 'success')
+            setMessage({ type: 'success', text: 'Payment successful and verified!' });
+          else
+            setMessage({ type: 'error', text: 'Payment verification failed.' });
+        } catch (err) {
+          console.error(err);
+          setMessage({ type: 'error', text: 'Verification error.' });
+        } finally {
+          setIsLoading(false);
         }
       },
-      prefill: { name: "Donor", email: donorEmail }
+      modal: {
+        ondismiss: () => setIsLoading(false)
+      },
+      prefill: { name: donorName, email: donorEmail, contact: mobileNumber }
     };
-  console.log("Payment options:", options); // Debug log to check options before opening Razorpay
+
     try {
       const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      setIsLoading(false); // Stop loading
-      setMessage({ type: 'error', text: `Payment Failed: ${response.error.description}` });
-      console.error("Razorpay Error:", response.error);
-    });
-    rzp.open();
-  } catch (error) {
-    console.error("Error opening Razorpay:", error);
-    setMessage({ type: 'error', text: 'Failed to initiate payment. Please try again.' });
-  }
+      rzp.on('payment.failed', (response) => {
+        setIsLoading(false);
+        setMessage({ type: 'error', text: `Payment Failed: ${response.error.description}` });
+      });
+      rzp.open();
+    } catch (error) {
+      console.error("Razorpay error:", error);
+      setIsLoading(false);
+      setMessage({ type: 'error', text: 'Failed to initiate payment.' });
+    }
   };
 
   const handleDonation = async (e) => {
     e.preventDefault();
-    
-    // Logic to prevent negative or zero values
     if (Number(amount) <= 0) {
       setMessage({ type: 'error', text: 'Please enter a valid donation amount.' });
       return;
@@ -82,16 +99,15 @@ export default function Donate() {
 
     try {
       await handlePayment(Number(amount));
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setIsLoading(false);
       setMessage({ 
         type: 'error', 
-        text: err.response?.data?.error || "Payment network error. Try again." 
+        text: "Payment network error." 
       });
-    } finally {
-      setIsLoading(false);
     }
   };
+
 
   return (
     <div className="py-24 px-6 md:px-12 lg:px-24">
