@@ -13,7 +13,11 @@ export default function Donate() {
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
+  
   const handlePayment = async (amount) => {
     const { data: order } = await api.post('/api/payment/create-order',
        { 
@@ -50,13 +54,18 @@ export default function Donate() {
       prefill: { name: "Donor", email: donorEmail }
     };
   console.log("Payment options:", options); // Debug log to check options before opening Razorpay
-    const rzp = new window.Razorpay(options);
+    try {
+      const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {
       setIsLoading(false); // Stop loading
       setMessage({ type: 'error', text: `Payment Failed: ${response.error.description}` });
       console.error("Razorpay Error:", response.error);
     });
     rzp.open();
+  } catch (error) {
+    console.error("Error opening Razorpay:", error);
+    setMessage({ type: 'error', text: 'Failed to initiate payment. Please try again.' });
+  }
   };
 
   const handleDonation = async (e) => {
