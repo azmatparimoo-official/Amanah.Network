@@ -12,32 +12,24 @@ export default function Dashboard() {
 
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [ analyticsRes, ledgerRes] = await Promise.all([
-        api.get('/api/donations', { headers: getHeaders() }),
-        api.get('/api/disbursements', { headers: getHeaders() }),
+      const [analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/admin/analytics', { headers: getHeaders() }),
         api.get('/api/admin/ledger', { headers: getHeaders() })
       ]);
 
-      // setData({ 
-      //   transactions: txnsRes.data, 
-      //   disbursements: disbRes.data, 
-      //   loading: false 
-      // });
       setAnalytics(analyticsRes.data);
       setLedger(ledgerRes.data);
     } catch (err) {
       console.error("Governance Sync Error:", err);
-      // setData(prev => ({ ...prev, loading: false }));
     }
   }, [getHeaders]);
 
   useEffect(() => {
-    const loadDashboardData = async () => {
+    async function loadDashboard() {
       await fetchDashboardData();
-    };
+    }
 
-    loadDashboardData();
+    loadDashboard();
   }, [fetchDashboardData]);
 
   return (
