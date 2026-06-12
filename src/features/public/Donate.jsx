@@ -8,7 +8,7 @@ export default function Donate() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [donorName, setDonorName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-
+  const [agreed, setAgreed] = useState(false);
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -177,10 +177,23 @@ export default function Donate() {
             className="w-full p-4 border-2 border-black focus:border-[#C5A059] outline-none transition-colors"
           />
         </div>
-
+       <div className="flex items-center space-x-3 py-2">
+          <input 
+            type="checkbox" 
+            id="terms" 
+            checked={agreed} 
+            onChange={(e) => setAgreed(e.target.checked)} 
+            required 
+            className="w-5 h-5 accent-[#284D3D]"
+          />
+          <label htmlFor="terms" className="text-xs font-bold uppercase tracking-widest cursor-pointer">
+            I agree to the 
+            <a href="/audit-terms" target="_blank" rel="noopener noreferrer" className="text-[#C5A059] underline ml-1">Audit Terms</a>
+          </label>
+        </div>
         <button 
           type="submit" 
-          disabled={isLoading} 
+          disabled={isLoading || !agreed} 
           className="w-full p-4 bg-[#284D3D] text-white font-bold uppercase tracking-widest border-2 border-black hover:bg-black transition-all duration-300 disabled:bg-gray-400"
         >
           {isLoading ? 'Processing securely...' : 'Authorize Donation'}
