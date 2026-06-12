@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
-export default function Dashboard({ currentUser }) {
+export default function Dashboard() {
   const [data, setData] = useState({
     users: [],
     transactions: [],
@@ -8,7 +8,7 @@ export default function Dashboard({ currentUser }) {
     loading: true
   });
   
-  const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '' });
+ // const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '' });
   const [ledger, setLedger] = useState([]);
   // Use the API's analytics endpoint instead of manual calculation
   const [serverAnalytics, setServerAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
@@ -59,7 +59,7 @@ export default function Dashboard({ currentUser }) {
     }
   };
 
-  const handleInvite = async (e) => {
+  /*const handleInvite = async (e) => {
     e.preventDefault();
     try {
       await api.post('/api/admin/create-member', 
@@ -73,7 +73,7 @@ export default function Dashboard({ currentUser }) {
       alert("Failed to invite. Ensure you have admin privileges.");
     }
   };
-
+*/
   if (data.loading) return <div className="p-5">Syncing administrative workstations...</div>;
 
   const { users, transactions, disbursements } = data;
@@ -101,12 +101,12 @@ export default function Dashboard({ currentUser }) {
       {/* Invite Section */}
       <div className="bg-white p-6 rounded shadow mb-6 border-l-4 border-blue-500">
         <h2 className="text-lg font-semibold mb-2">Invite New Board Member</h2>
-        <form onSubmit={handleInvite} className="flex gap-2">
+        {/* <form onSubmit={handleInvite} className="flex gap-2">
           <input className="border p-2 rounded" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} value={formData.email} required />
           <input className="border p-2 rounded" placeholder="First Name" onChange={(e) => setFormData({...formData, firstName: e.target.value})} value={formData.firstName} required />
           <input className="border p-2 rounded" placeholder="Last Name" onChange={(e) => setFormData({...formData, lastName: e.target.value})} value={formData.lastName} required />
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Invite</button>
-        </form>
+        </form> */}
       </div>
 
       <div className="bg-gray-100 p-4 rounded mb-6">System Status: {users.length} users, {transactions.length} transactions.</div>
