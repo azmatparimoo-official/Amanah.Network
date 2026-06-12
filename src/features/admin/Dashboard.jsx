@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
 
 export default function Dashboard() {
-  const [data, setData] = useState({ transactions: [], disbursements: [], loading: true });
+  //const [data, setData] = useState({ transactions: [], disbursements: [], loading: true });
   const [ledger, setLedger] = useState([]);
   const [analytics, setAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
 
@@ -12,23 +12,23 @@ export default function Dashboard() {
 
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [txnsRes, disbRes, analyticsRes, ledgerRes] = await Promise.all([
+      const [ analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/donations', { headers: getHeaders() }),
         api.get('/api/disbursements', { headers: getHeaders() }),
         api.get('/api/admin/analytics', { headers: getHeaders() }),
         api.get('/api/admin/ledger', { headers: getHeaders() })
       ]);
 
-      setData({ 
-        transactions: txnsRes.data, 
-        disbursements: disbRes.data, 
-        loading: false 
-      });
+      // setData({ 
+      //   transactions: txnsRes.data, 
+      //   disbursements: disbRes.data, 
+      //   loading: false 
+      // });
       setAnalytics(analyticsRes.data);
       setLedger(ledgerRes.data);
     } catch (err) {
       console.error("Governance Sync Error:", err);
-      setData(prev => ({ ...prev, loading: false }));
+      // setData(prev => ({ ...prev, loading: false }));
     }
   }, [getHeaders]);
 
@@ -62,23 +62,7 @@ export default function Dashboard() {
       </div>
 
       {/* Disbursements */}
-      <section className="mb-12">
-        <h2 className="text-xl font-bold mb-4 uppercase">Pending Disbursements</h2>
-        <div className="bg-white border-2 border-black p-4">
-          {data.disbursements.filter(d => d.status === 'PENDING').map(d => (
-            <div key={d._id} className="flex justify-between items-center py-3 border-b last:border-0">
-              <span className="font-bold">{d.projectTitle} - ₹{d.amount}</span>
-              <button 
-                onClick={async () => {
-                  await api.patch(`/api/disbursements/approve/${d._id}`, {}, { headers: getHeaders() });
-                  fetchDashboardData();
-                }} 
-                className="bg-black text-white px-4 py-2 text-xs uppercase hover:bg-[#284D3D]"
-              >Authorize</button>
-            </div>
-          ))}
-        </div>
-      </section>
+      
 
       {/* Audit Ledger */}
       <section>
