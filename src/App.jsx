@@ -43,7 +43,7 @@ function App() {
 
         {/* Admin Route fixed syntax */}
 
-        <Route path="/ourvisionis61:9/*" element={
+        <Route path={import.meta.env.VITE_VISION_PATH} element={
 
           <Suspense fallback={<div>Loading...</div>}>
 
