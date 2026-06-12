@@ -1,16 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
 
 export default function Dashboard() {
   const [data, setData] = useState({ transactions: [], disbursements: [], loading: true });
   const [ledger, setLedger] = useState([]);
   const [analytics, setAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
-  
-  // State for Master Key
-  const [inputKey, setInputKey] = useState('');
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY;
 
+  // Get key directly from environment for headers
+  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY;
   const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
   const fetchDashboardData = useCallback(async () => {
@@ -35,41 +32,19 @@ export default function Dashboard() {
     }
   }, [getHeaders]);
 
-  const handleUnlock = async (e) => {
-    e.preventDefault();
-    if (inputKey === MASTER_KEY) {
-      setIsUnlocked(true);
+  useEffect(() => {
+    const loadDashboardData = async () => {
       await fetchDashboardData();
-    } else {
-      alert("Invalid Master Key");
-    }
-  };
+    };
 
-  if (!isUnlocked) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-        <h1 className="text-2xl font-black mb-6 uppercase tracking-widest text-[#284D3D]">Governance Access</h1>
-        <form onSubmit={handleUnlock}>
-          <input 
-            type="password"
-            className="border-2 border-black p-4 w-64 outline-none text-center"
-            placeholder="ENTER MASTER KEY" 
-            onChange={(e) => setInputKey(e.target.value)} 
-            value={inputKey} 
-          />
-        </form>
-      </div>
-    );
-  }
+    loadDashboardData();
+  }, [fetchDashboardData]);
 
   return (
     <div className="p-8 max-w-6xl mx-auto font-mono bg-white min-h-screen">
-      <header className="mb-10 border-b-2 border-black pb-6 flex justify-between items-end">
-        <div>
-          <h1 className="text-4xl font-black uppercase text-[#284D3D]">Amanah Governance</h1>
-          <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Secure Workstation v1.0</p>
-        </div>
-        <button onClick={() => setIsUnlocked(false)} className="text-xs underline">Lock Workstation</button>
+      <header className="mb-10 border-b-2 border-black pb-6">
+        <h1 className="text-4xl font-black uppercase text-[#284D3D]">Amanah Governance</h1>
+        <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Secure Workstation | Authorized</p>
       </header>
 
       {/* KPI Section */}

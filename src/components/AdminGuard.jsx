@@ -48,15 +48,6 @@ function AdminGuard({ children }) {
             Unlock Workstation
           </button>
         </div>
-
-        <div className="text-center border-t border-black pt-4">
-          <button 
-            onClick={() => setShowPortal(true)}
-            className="text-xs font-bold uppercase underline hover:text-[#C5A059]"
-          >
-            Board Member Portal
-          </button>
-        </div>
       </div>
     </div>
   );
