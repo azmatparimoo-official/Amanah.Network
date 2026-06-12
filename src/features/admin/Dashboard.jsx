@@ -69,21 +69,27 @@ export default function Dashboard() {
     </tr>
   </thead>
   <tbody>
-    {ledger.map((entry, i) => (
-      <tr key={i} className="border-b hover:bg-gray-50">
-        <td className="p-3">{new Date(entry.timestamp).toLocaleString('en-IN')}</td>
-        <td className={`p-3 font-bold ${entry.actionType === 'RECEIVED' ? 'text-green-600' : 'text-red-600'}`}>
-          {entry.actionType}
-        </td>
-        <td className="p-3">{entry.target}</td>
-        <td className="p-3">₹{entry.amount.toLocaleString()}</td>
-        <td className="p-3 text-xs font-mono text-gray-500">{entry.transactionId}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-        </div>
-      </section>
+   {ledger && ledger.length > 0 ? (
+          ledger.map((entry, i) => (
+            <tr key={i} className="border-b hover:bg-gray-50">
+              <td className="p-3">{new Date(entry.timestamp).toLocaleString('en-IN')}</td>
+              <td className={`p-3 font-bold ${entry.actionType === 'RECEIVED' ? 'text-green-600' : 'text-red-600'}`}>
+                {entry.actionType}
+              </td>
+              <td className="p-3">{entry.target}</td>
+              <td className="p-3">₹{entry.amount.toLocaleString()}</td>
+              <td className="p-3 text-xs font-mono text-gray-500">{entry.transactionId}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="5" className="p-4 text-center text-gray-500">No ledger entries found.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</section>
     </div>
   );
 }
