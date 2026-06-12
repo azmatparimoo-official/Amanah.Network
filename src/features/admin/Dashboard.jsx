@@ -1,152 +1,131 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import api from '../../api';
+
 export default function Dashboard() {
-  const [data, setData] = useState({
-    users: [],
-    transactions: [],
-    disbursements: [],
-    loading: true
-  });
-  
- // const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '' });
+  const [data, setData] = useState({ transactions: [], disbursements: [], loading: true });
   const [ledger, setLedger] = useState([]);
-  // Use the API's analytics endpoint instead of manual calculation
-  const [serverAnalytics, setServerAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
+  const [analytics, setAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
+  
+  // State for Master Key
+  const [inputKey, setInputKey] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY;
+
+  const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [usersRes, txnsRes, disbRes, analyticsRes] = await Promise.all([
-        api.get('/api/users'),
-        api.get('/api/donations'),
-        api.get('/api/disbursements'),
-        api.get('/api/admin/analytics')
+      const [txnsRes, disbRes, analyticsRes, ledgerRes] = await Promise.all([
+        api.get('/api/donations', { headers: getHeaders() }),
+        api.get('/api/disbursements', { headers: getHeaders() }),
+        api.get('/api/admin/analytics', { headers: getHeaders() }),
+        api.get('/api/admin/ledger', { headers: getHeaders() })
       ]);
-      
+
       setData({ 
-        users: usersRes.data, 
         transactions: txnsRes.data, 
         disbursements: disbRes.data, 
         loading: false 
       });
-      setServerAnalytics(analyticsRes.data);
-      // setLedger(usersRes.data); // Kept as per your original code
+      setAnalytics(analyticsRes.data);
+      setLedger(ledgerRes.data);
     } catch (err) {
-      console.error("Dashboard error:", err);
+      console.error("Governance Sync Error:", err);
       setData(prev => ({ ...prev, loading: false }));
     }
-  }, []);
+  }, [getHeaders]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  useEffect(() => {
-    api.get('/api/admin/ledger', { 
-      headers: { 'use-secret-key': localStorage.getItem('adminKey') } 
-    })
-    .then(res => setLedger(res.data))
-    .catch(err => console.error("Ledger fetch error:", err));
-  }, []);
-
-  const handleApproveDisbursement = async (id) => {
-    try {
-      await api.patch(`/api/disbursements/approve/${id}`);
-      // Audit log removed from here if not yet implemented, keeping just the core action
-      await fetchDashboardData(); 
-    } catch (err) {
-      console.error("Approval error:", err);
-    }
-  };
-
-  /*const handleInvite = async (e) => {
+  const handleUnlock = async (e) => {
     e.preventDefault();
-    try {
-      await api.post('/api/admin/create-member', 
-        formData, 
-        { headers: { 'x-admin-id': currentUser._id } }
-      );
-      alert("Board member invited successfully!");
-      setFormData({ email: '', firstName: '', lastName: '' });
-    } catch (err) {
-      console.error("Invite error:", err);
-      alert("Failed to invite. Ensure you have admin privileges.");
+    if (inputKey === MASTER_KEY) {
+      setIsUnlocked(true);
+      await fetchDashboardData();
+    } else {
+      alert("Invalid Master Key");
     }
   };
-*/
-  if (data.loading) return <div className="p-5">Syncing administrative workstations...</div>;
 
-  const { users, transactions, disbursements } = data;
+  if (!isUnlocked) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <h1 className="text-2xl font-black mb-6 uppercase tracking-widest text-[#284D3D]">Governance Access</h1>
+        <form onSubmit={handleUnlock}>
+          <input 
+            type="password"
+            className="border-2 border-black p-4 w-64 outline-none text-center"
+            placeholder="ENTER MASTER KEY" 
+            onChange={(e) => setInputKey(e.target.value)} 
+            value={inputKey} 
+          />
+        </form>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8 font-sans">
-      {/* KPI Section using Server-Side Data */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-green-100 p-4 rounded text-center">
-          <h3 className="text-sm">Total Received</h3>
-          <p className="text-2xl font-bold">${serverAnalytics.totalDonated}</p>
+    <div className="p-8 max-w-6xl mx-auto font-mono bg-white min-h-screen">
+      <header className="mb-10 border-b-2 border-black pb-6 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-black uppercase text-[#284D3D]">Amanah Governance</h1>
+          <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Secure Workstation v1.0</p>
         </div>
-        <div className="bg-red-100 p-4 rounded text-center">
-          <h3 className="text-sm">Total Disbursed</h3>
-          <p className="text-2xl font-bold">${serverAnalytics.totalDisbursed}</p>
-        </div>
-        <div className="bg-blue-100 p-4 rounded text-center">
-          <h3 className="text-sm">Current Reserve</h3>
-          <p className="text-2xl font-bold">${serverAnalytics.balance}</p>
-        </div>
-      </div>
+        <button onClick={() => setIsUnlocked(false)} className="text-xs underline">Lock Workstation</button>
+      </header>
 
-      <h1 className="text-2xl font-bold mb-4">Amanah Governance Workstation</h1>
-      
-      {/* Invite Section */}
-      <div className="bg-white p-6 rounded shadow mb-6 border-l-4 border-blue-500">
-        <h2 className="text-lg font-semibold mb-2">Invite New Board Member</h2>
-        {/* <form onSubmit={handleInvite} className="flex gap-2">
-          <input className="border p-2 rounded" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} value={formData.email} required />
-          <input className="border p-2 rounded" placeholder="First Name" onChange={(e) => setFormData({...formData, firstName: e.target.value})} value={formData.firstName} required />
-          <input className="border p-2 rounded" placeholder="Last Name" onChange={(e) => setFormData({...formData, lastName: e.target.value})} value={formData.lastName} required />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Invite</button>
-        </form> */}
-      </div>
-
-      <div className="bg-gray-100 p-4 rounded mb-6">System Status: {users.length} users, {transactions.length} transactions.</div>
-      
-      {/* Disbursements List */}
-      <div>
-        {disbursements.map((d) => (
-          <div key={d._id} className="border p-2 my-2 flex justify-between">
-            <span>{d.projectTitle}</span>
-            {d.status === 'PENDING' && (
-              <button onClick={() => handleApproveDisbursement(d._id)} className="bg-blue-500 text-white px-3 py-1 rounded">Approve</button>
-            )}
+      {/* KPI Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        {[
+          { label: 'Total Received', val: analytics.totalDonated, color: 'bg-green-700' },
+          { label: 'Total Disbursed', val: analytics.totalDisbursed, color: 'bg-red-700' },
+          { label: 'Current Reserve', val: analytics.balance, color: 'bg-blue-700' }
+        ].map(kpi => (
+          <div key={kpi.label} className={`${kpi.color} text-white p-6 shadow-lg`}>
+            <h3 className="text-xs uppercase tracking-widest opacity-80">{kpi.label}</h3>
+            <p className="text-3xl font-black mt-2">₹{kpi.val.toLocaleString()}</p>
           </div>
         ))}
       </div>
 
-      {/* Ledger Display */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">General Ledger</h2>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Date/Time</th>
-              <th className="border p-2">Action</th>
-              <th className="border p-2">Target</th>
-              <th className="border p-2">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ledger.map((entry, idx) => (
-              <tr key={idx} className="border-b">
-                <td className="border p-2">{entry.timestamp ? new Date(entry.timestamp).toLocaleString() : 'N/A'}</td>
-                <td className="border p-2">{entry.actionType || 'N/A'}</td>
-                <td className="border p-2">{entry.targetUserEmail || 'N/A'}</td>
-                <td className="border p-2">${entry.amount || 0}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Disbursements */}
+      <section className="mb-12">
+        <h2 className="text-xl font-bold mb-4 uppercase">Pending Disbursements</h2>
+        <div className="bg-white border-2 border-black p-4">
+          {data.disbursements.filter(d => d.status === 'PENDING').map(d => (
+            <div key={d._id} className="flex justify-between items-center py-3 border-b last:border-0">
+              <span className="font-bold">{d.projectTitle} - ₹{d.amount}</span>
+              <button 
+                onClick={async () => {
+                  await api.patch(`/api/disbursements/approve/${d._id}`, {}, { headers: getHeaders() });
+                  fetchDashboardData();
+                }} 
+                className="bg-black text-white px-4 py-2 text-xs uppercase hover:bg-[#284D3D]"
+              >Authorize</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Audit Ledger */}
+      <section>
+        <h2 className="text-xl font-bold mb-4 uppercase">System Audit Ledger</h2>
+        <div className="overflow-x-auto border-2 border-black">
+          <table className="w-full text-sm">
+            <thead className="bg-black text-white">
+              <tr>{['Date', 'Action', 'Target', 'Amount'].map(h => <th key={h} className="p-3 text-left">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {ledger.map((entry, i) => (
+                <tr key={i} className="border-b hover:bg-gray-50">
+                  <td className="p-3">{new Date(entry.timestamp).toLocaleDateString('en-IN')}</td>
+                  <td className="p-3">{entry.actionType}</td>
+                  <td className="p-3">{entry.targetUserEmail}</td>
+                  <td className="p-3 font-bold">₹{entry.amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }
