@@ -69,20 +69,27 @@ export default function Dashboard() {
         <h2 className="text-xl font-bold mb-4 uppercase">System Audit Ledger</h2>
         <div className="overflow-x-auto border-2 border-black">
           <table className="w-full text-sm">
-            <thead className="bg-black text-white">
-              <tr>{['Date', 'Action', 'Target', 'Amount'].map(h => <th key={h} className="p-3 text-left">{h}</th>)}</tr>
-            </thead>
-            <tbody>
-              {ledger.map((entry, i) => (
-                <tr key={i} className="border-b hover:bg-gray-50">
-                  <td className="p-3">{new Date(entry.timestamp).toLocaleDateString('en-IN')}</td>
-                  <td className="p-3">{entry.actionType}</td>
-                  <td className="p-3">{entry.targetUserEmail}</td>
-                  <td className="p-3 font-bold">₹{entry.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  <thead className="bg-black text-white">
+    <tr>
+      {['Date', 'Action', 'Target', 'Amount', 'Txn ID'].map(h => (
+        <th key={h} className="p-3 text-left">{h}</th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {ledger.map((entry, i) => (
+      <tr key={i} className="border-b hover:bg-gray-50">
+        <td className="p-3">{new Date(entry.timestamp).toLocaleString('en-IN')}</td>
+        <td className={`p-3 font-bold ${entry.actionType === 'RECEIVED' ? 'text-green-600' : 'text-red-600'}`}>
+          {entry.actionType}
+        </td>
+        <td className="p-3">{entry.target}</td>
+        <td className="p-3">₹{entry.amount.toLocaleString()}</td>
+        <td className="p-3 text-xs font-mono text-gray-500">{entry.transactionId}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
         </div>
       </section>
     </div>
