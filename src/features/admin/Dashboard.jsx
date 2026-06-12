@@ -51,7 +51,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         {[
           { label: 'Total Received', val: analytics.totalDonated, color: 'bg-green-700' },
-          { label: 'Total Disbursed', val: analytics.totalDisbursed, color: 'bg-red-700' },
+         // { label: 'Total Disbursed', val: analytics.totalDisbursed, color: 'bg-red-700' },
           { label: 'Current Reserve', val: analytics.balance, color: 'bg-blue-700' }
         ].map(kpi => (
           <div key={kpi.label} className={`${kpi.color} text-white p-6 shadow-lg`}>
