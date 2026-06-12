@@ -82,7 +82,7 @@ export default function Home() {
           <div>
             <h5 className="mb-6 text-gray-400">Governance</h5>
             <div className="flex flex-col gap-4">
-              <Link to="/donate" className="hover:text-[#C5A059] transition">Donate Portal</Link>
+             <Link to="/donate" className="hover:text-[#C5A059] transition">Donate Portal</Link>
               <Link to="/terms" className="hover:text-[#C5A059] transition">Audit Terms</Link>
               <Link to="/timeline" className="hover:text-[#C5A059] transition">Achievements</Link>
             </div>
@@ -90,7 +90,6 @@ export default function Home() {
           <div>
             <h5 className="mb-6 text-gray-400">Resources</h5>
             <div className="flex flex-col gap-4">
-              <Link to="/request-aid" className="hover:text-[#C5A059] transition">Request Aid</Link>
               <Link to="/register" className="hover:text-[#C5A059] transition">Register</Link>
               <Link to="/contact" className="hover:text-[#C5A059] transition">Contact</Link>
             </div>
@@ -106,3 +105,4 @@ export default function Home() {
     </div>
   );
 }
+           /*   <Link to="/request-aid" className="hover:text-[#C5A059] transition">Request Aid</Link> */

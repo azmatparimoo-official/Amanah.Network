@@ -13,7 +13,7 @@ export default function Navbar() {
     { to: "/contact", label: "Contact" },
     { to: "/vision", label: "Vision" },
     { to: "/donate", label: "Donate Portal" },
-    { to: "/request-aid", label: "Request Aid Portal" },
+    //{ to: "/request-aid", label: "Request Aid Portal" },
     { to: "/timeline", label: "Achievements" },
     {to:"/terms", label:"Terms"}
   ];
