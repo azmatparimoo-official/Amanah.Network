@@ -18,26 +18,22 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="relative bg-white border-b border-gray-100 h-24 z-50 flex items-center">
-      {/* 1. Logo Container: Positioned absolute or flexed to stick to the left */}
-      <div className="absolute left-0 pl-6 md:pl-12 lg:pl-24 h-full flex items-center">
-        <Link to="/" className="flex items-center gap-3 group h-full">
-          <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
-          <div className="flex flex-col">
-            <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">Amanah</span>   
-            <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">Network</span>      
-          </div>
-        </Link>
-      </div>
-
-      {/* 2. Links Container: Centered as before, but with space for the logo */}
-      <div className="w-full max-w-1400px mx-auto flex justify-end items-center pr-6 md:pr-12 lg:pr-24">
-        {/* Desktop Links */}
-        <div className="hidden md:flex gap-4 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800">
-          {navLinks.map((link, index) => (
-            <Link key={index} to={link.to} className="hover:text-[#C5A059] transition-colors">{link.label}</Link>
-          ))}
-        </div>
+    <nav className="relative bg-white border-b border-gray-100 h-24 pl-0 pr-6 md:pr-12 lg:pr-24 z-50 flex items-center">
+      
+      {/* 2. Add the padding here instead so the logo is flush, but links remain aligned */}
+      <div className="flex justify-between items-center w-full max-w-1400px mx-auto h-full pl-6 md:pl-12 lg:pl-24">
+        
+       {/* Left: Logo & Branding */}
+       <Link to="/" className="flex items-center gap-3 group h-full">
+         {/* h-full and py-2 ensures it meets top and bottom edge */}
+         <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
+         <div className="flex flex-col">
+           <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
+             Amanah</span>   
+           <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">
+             Network </span>      
+         </div>
+       </Link>
 
         {/* Mobile Hamburger */}
         <button 
