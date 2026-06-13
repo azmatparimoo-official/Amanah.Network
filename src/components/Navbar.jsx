@@ -18,11 +18,14 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="relative bg-white border-b border-gray-100 h-24 px-6 md:px-12 lg:px-24 z-50 flex items-center">
-      <div className="flex justify-between items-center w-full max-w-1400px mx-auto h-full">
+    <nav className="relative bg-white border-b border-gray-100 h-24 pl-0 pr-6 md:pr-12 lg:pr-24 z-50 flex items-center">
+      
+      {/* 2. Add the padding here instead so the logo is flush, but links remain aligned */}
+      <div className="flex justify-between items-center w-full max-w-1400px mx-auto h-full pl-6 md:pl-12 lg:pl-24">
         
-       {/* Left: Logo & Branding - h-full makes it edge to edge */}
+       {/* Left: Logo & Branding */}
        <Link to="/" className="flex items-center gap-3 group h-full">
+         {/* h-full and py-2 ensures it meets top and bottom edge */}
          <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
          <div className="flex flex-col">
            <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
