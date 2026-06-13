@@ -34,21 +34,8 @@ export default function Navbar() {
       </div>
 
       {/* 2. Links Container - Constrained to 1400px but pushes links to the right */}
-      <div className="w-full max-w-1400px mx-auto flex justify-end items-center pr-6 md:pr-12 lg:pr-24">
-        
-        {/* Desktop Links */}
-        <div className="hidden md:flex gap-4 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
-          {navLinks.map((link, index) => (
-            <Link 
-              key={`${link.to}-${index}`} 
-              to={link.to} 
-              className="hover:text-[#C5A059] transition-colors duration-300 whitespace-nowrap"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
 
+      <div>
         {/* Mobile Hamburger */}
         <button 
           onClick={() => setIsOpen(!isOpen)} 
