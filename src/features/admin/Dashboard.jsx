@@ -3,31 +3,26 @@ import api from '../../api';
 
 export default function Dashboard() {
   const [ledger, setLedger] = useState([]);
-  const [analytics, setAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
+  const [analytics, setAnalytics] = useState({ totalDonated: 0, totalSpent: 0, balance: 0 });
   const [filter, setFilter] = useState({ from: '', to: '', actionType: 'ALL' });
-  // NEW: State for filter and Transfer form
   const [dates, setDates] = useState({ from: '', to: '' });
-  const [transfer, setTransfer] = useState({ recipientName: '', amount: '', note: '' });
 
   const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY;
   const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
-  // Updated fetch to include date params
   const fetchDashboardData = useCallback(async () => {
     try {
-      const startDate = filter.from;
-      const endDate = filter.to;
-      const actionType = filter.actionType;
       const [analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/admin/analytics', { headers: getHeaders() }),
-        api.get(`/api/admin/ledger?from=${dates.from}&to=${dates.to}`, { headers: getHeaders(), params: { from: startDate, to: endDate } }),
-      api.get(`/api/admin/ledger?from=${filter.from}&to=${filter.to}&actionType=${filter.actionType}`, { headers: getHeaders(),params: { actionType: actionType } })      
+        api.get(`/api/admin/ledger`, { 
+          headers: getHeaders(), 
+          params: { from: dates.from, to: dates.to, actionType: filter.actionType } 
+        })
       ]);
-
       setAnalytics(analyticsRes.data);
       setLedger(ledgerRes.data);
     } catch (err) {
-      console.error("Governance Sync Error:", err);
+      console.error("Sync Error:", err);
     }
   }, [getHeaders, dates, filter]);
 
@@ -35,20 +30,8 @@ export default function Dashboard() {
     const fetchInitialData = async () => {
       await fetchDashboardData();
     };
-
     fetchInitialData();
-  }, [fetchDashboardData]);
-
-  // NEW: Transfer Aid Action
-  const handleTransfer = async () => {
-    try {
-      await api.post('/api/admin/transfer', transfer, { headers: getHeaders() });
-      alert("Disbursement successful");
-      fetchDashboardData(); // Refresh UI
-    } catch {
-      alert("Transfer failed");
-    }
-  };
+  }, [fetchDashboardData]); 
 
   return (
     <div className="p-8 max-w-6xl mx-auto font-mono bg-white min-h-screen">
@@ -61,7 +44,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         {[
           { label: 'Total Received', val: analytics.totalDonated, color: 'bg-green-700' },
-          { label: 'Total Spent', val: analytics.totalDisbursed, color: 'bg-red-700' },
+          { label: 'Total Spent', val: analytics.totalSpent || 0, color: 'bg-red-700' },
           { label: 'Current Reserve', val: analytics.balance, color: 'bg-blue-700' }
         ].map(kpi => (
           <div key={kpi.label} className={`${kpi.color} text-white p-6 shadow-lg`}>
@@ -71,26 +54,18 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* NEW: Filter & Transfer Interface */}
-      <div className="grid md:grid-cols-2 gap-8 mb-10">
-        <div className="border-2 border-black p-6">
-            <h2 className="font-bold mb-4">FILTER LEDGER</h2>
-            <div className="flex gap-2">
-                <input type="date" className="border p-2" onChange={(e) => setDates({...dates, from: e.target.value})} />
-                <input type="date" className="border p-2" onChange={(e) => setDates({...dates, to: e.target.value})} />
-            <select className="border p-2" onChange={(e) => setFilter({...filter, actionType: e.target.value})}>
-            <option value="ALL">All Actions</option>
-            <option value="RECEIVED">Received</option>
-            <option value="SPENT">Spent</option>
-        </select>
-            </div>
-        </div>
-        <div className="border-2 border-black p-6">
-            <h2 className="font-bold mb-4">DISBURSE AID (SPENT)</h2>
-            <input placeholder="Name" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, recipientName: e.target.value})} />
-            <input type="number" placeholder="Amount" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, amount: e.target.value})} />
-            <button onClick={handleTransfer} className="bg-black text-white w-full py-2">SEND FUNDS</button>
-        </div>
+      {/* Filter Interface Only */}
+      <div className="mb-10 border-2 border-black p-6">
+          <h2 className="font-bold mb-4">FILTER LEDGER</h2>
+          <div className="flex gap-2">
+              <input type="date" className="border p-2" onChange={(e) => setDates({...dates, from: e.target.value})} />
+              <input type="date" className="border p-2" onChange={(e) => setDates({...dates, to: e.target.value})} />
+              <select className="border p-2" onChange={(e) => setFilter({...filter, actionType: e.target.value})}>
+                <option value="ALL">All Actions</option>
+                <option value="RECEIVED">Received</option>
+                <option value="SPENT">Spent</option>
+              </select>
+          </div>
       </div>
 
       {/* Audit Ledger */}
