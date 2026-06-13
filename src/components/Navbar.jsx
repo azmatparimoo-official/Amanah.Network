@@ -18,24 +18,21 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="relative bg-white border-b border-gray-100 h-24 z-50 flex items-center">
-      
-      {/* 1. Logo - Always Left */}
-      <div className="absolute left-0 pl-6 md:pl-12 lg:pl-24 h-full flex items-center">
-        <Link to="/" className="flex items-center gap-3 group h-full">
-          <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
-          <div className="flex flex-col">
-            <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">Amanah</span>   
-            <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">Network</span>      
+    <nav className="relative bg-white border-b border-gray-100 h-24 z-50 flex items-center w-full">
+      {/* Container matches the site's main width and padding */}
+      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between h-full">
+        
+        {/* Left Side: Logo & Name (Fixed Left) */}
+        <Link to="/" className="flex items-center gap-3 h-full shrink-0">
+          <img src={logo} alt="Amanah Network" className="h-16 w-auto py-2 object-contain" />
+          <div className="flex flex-col justify-center">
+            <span className="text-xl font-black uppercase leading-none text-[#284D3D]">Amanah</span>   
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.2em]">Network</span>      
           </div>
         </Link>
-      </div>
 
-      {/* 2. Right Side - Desktop Links & Mobile Toggle */}
-      <div className="w-full h-full flex justify-end items-center pr-6 md:pr-12 lg:pr-24">
-        
-        {/* Desktop Links - Visible on md and up */}
-        <div className="hidden md:flex gap-6 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
+        {/* Right Side: Desktop Links (Pushed Right) */}
+        <div className="hidden md:flex gap-4 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
           {navLinks.map((link, index) => (
             <Link key={index} to={link.to} className="hover:text-[#C5A059] transition-colors whitespace-nowrap">
               {link.label}
@@ -43,25 +40,15 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Mobile Hamburger - Only visible below md */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="md:hidden p-2 text-2xl focus:outline-none"
-        >
-          ☰
-        </button>
+        {/* Mobile Hamburger */}
+        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-2xl">☰</button>
       </div>
 
-      {/* Mobile Menu - Only visible when toggled on small screens */}
+      {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-24 left-0 w-full md:hidden flex flex-col p-6 bg-white border-b border-gray-100 uppercase font-bold text-xs gap-6 shadow-2xl z-40">
+        <div className="absolute top-24 left-0 w-full bg-white border-b border-gray-100 p-6 flex flex-col gap-4 uppercase font-bold text-xs shadow-2xl z-40">
           {navLinks.map((link, index) => (
-            <Link 
-              key={index} 
-              to={link.to} 
-              onClick={() => setIsOpen(false)}
-              className="hover:text-[#C5A059] border-b border-gray-50 pb-2 transition-colors"
-            >
+            <Link key={index} to={link.to} onClick={() => setIsOpen(false)} className="border-b pb-2">
               {link.label}
             </Link>
           ))}
