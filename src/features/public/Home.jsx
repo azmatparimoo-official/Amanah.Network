@@ -62,7 +62,7 @@ export default function Home() {
       <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#0A0A0A] text-white">
         <p className="text-[#C5A059] font-mono text-sm uppercase tracking-widest mb-6">Our Principle:</p>
         <blockquote className="max-w-3xl text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.95] mb-12">
-          "EDUCATING TO REVOLUTIONIZE."
+          "EDUCATE TO REVOLUTIONIZE."
         </blockquote>
         <Link to="/contact" className="inline-block px-8 py-3 border border-white text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">
           Get Involved
