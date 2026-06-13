@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../amanahlogo.png'; 
 
@@ -16,11 +16,21 @@ export default function Navbar() {
     { to: "/timeline", label: "Achievements" },
     { to: "/terms", label: "Terms" }
   ];
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) { // 768px is the 'md' breakpoint
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <nav className="relative bg-white border-b border-gray-100 h-24 z-50 flex items-center w-full">
       {/* Container matches the site's main width and padding */}
-      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between h-full">
+      <div className="w-full max-w-1400px mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between h-full">
         
         {/* Left Side: Logo & Name (Fixed Left) */}
         <Link to="/" className="flex items-center gap-3 h-full shrink-0">
