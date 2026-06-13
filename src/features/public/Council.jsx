@@ -62,7 +62,7 @@ export default function Council() {
               <img 
                 src={m.image} 
                 alt={m.name} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover object-center"
               />
             </div>
             
