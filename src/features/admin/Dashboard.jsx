@@ -15,10 +15,13 @@ export default function Dashboard() {
   // Updated fetch to include date params
   const fetchDashboardData = useCallback(async () => {
     try {
+      const startDate = filter.from;
+      const endDate = filter.to;
+      const actionType = filter.actionType;
       const [analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/admin/analytics', { headers: getHeaders() }),
-        api.get(`/api/admin/ledger?from=${dates.from}&to=${dates.to}`, { headers: getHeaders() }),
-      api.get(`/api/admin/ledger?from=${filter.from}&to=${filter.to}&actionType=${filter.actionType}`, { headers: getHeaders() })      
+        api.get(`/api/admin/ledger?from=${dates.from}&to=${dates.to}`, { headers: getHeaders(), params: { from: startDate, to: endDate } }),
+      api.get(`/api/admin/ledger?from=${filter.from}&to=${filter.to}&actionType=${filter.actionType}`, { headers: getHeaders(),params: { actionType: actionType } })      
       ]);
 
       setAnalytics(analyticsRes.data);
