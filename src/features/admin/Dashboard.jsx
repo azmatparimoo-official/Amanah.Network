@@ -75,6 +75,11 @@ export default function Dashboard() {
             <div className="flex gap-2">
                 <input type="date" className="border p-2" onChange={(e) => setDates({...dates, from: e.target.value})} />
                 <input type="date" className="border p-2" onChange={(e) => setDates({...dates, to: e.target.value})} />
+            <select className="border p-2" onChange={(e) => setFilter({...filter, actionType: e.target.value})}>
+            <option value="ALL">All Actions</option>
+            <option value="RECEIVED">Received</option>
+            <option value="SPENT">Spent</option>
+        </select>
             </div>
         </div>
         <div className="border-2 border-black p-6">
@@ -82,11 +87,6 @@ export default function Dashboard() {
             <input placeholder="Name" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, recipientName: e.target.value})} />
             <input type="number" placeholder="Amount" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, amount: e.target.value})} />
             <button onClick={handleTransfer} className="bg-black text-white w-full py-2">SEND FUNDS</button>
-            <select className="border p-2" onChange={(e) => setFilter({...filter, actionType: e.target.value})}>
-            <option value="ALL">All Actions</option>
-            <option value="RECEIVED">Received</option>
-            <option value="SPENT">Spent</option>
-        </select>
         </div>
       </div>
 
