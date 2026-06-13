@@ -17,33 +17,26 @@ export default function Navbar() {
     { to: "/terms", label: "Terms" }
   ];
 
-  return (
-    <nav className="relative bg-white border-b border-gray-100 h-24 pl-0 pr-6 md:pr-12 lg:pr-24 z-50 flex items-center">
+ return (
+    <nav className="relative bg-white border-b border-gray-100 h-24 z-50 flex items-center">
       
-      {/* 2. Add the padding here instead so the logo is flush, but links remain aligned */}
-      <div className="flex justify-between items-center w-full max-w-1400px mx-auto h-full pl-6 md:pl-12 lg:pl-24">
+      {/* 1. Logo Container - Absolute position sticks it to extreme left */}
+      <div className="absolute left-0 pl-6 md:pl-12 lg:pl-24 h-full flex items-center">
+        <Link to="/" className="flex items-center gap-3 group h-full">
+          <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
+          <div className="flex flex-col">
+            <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
+              Amanah</span>   
+            <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">
+              Network </span>      
+          </div>
+        </Link>
+      </div>
+
+      {/* 2. Links Container - Constrained to 1400px but pushes links to the right */}
+      <div className="w-full max-w-1400px mx-auto flex justify-end items-center pr-6 md:pr-12 lg:pr-24">
         
-       {/* Left: Logo & Branding */}
-       <Link to="/" className="flex items-center gap-3 group h-full">
-         {/* h-full and py-2 ensures it meets top and bottom edge */}
-         <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
-         <div className="flex flex-col">
-           <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
-             Amanah</span>   
-           <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">
-             Network </span>      
-         </div>
-       </Link>
-
-        {/* Mobile Hamburger */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="md:hidden p-2 text-2xl focus:outline-none"
-        >
-          ☰
-        </button>
-
-        {/* Desktop Links - gap-4 lg:gap-8 prevents overlapping */}
+        {/* Desktop Links */}
         <div className="hidden md:flex gap-4 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
           {navLinks.map((link, index) => (
             <Link 
@@ -55,6 +48,14 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
+
+        {/* Mobile Hamburger */}
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className="md:hidden p-2 text-2xl focus:outline-none"
+        >
+          ☰
+        </button>
       </div>
 
       {/* Mobile Menu */}
