@@ -2,25 +2,40 @@ import { useState } from 'react';
 import api from '../../api';
 
 export default function SecureTransfer() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [creds, setCreds] = useState({ email: '', password: '' });
   const [transfer, setTransfer] = useState({ recipientName: '', amount: '', note: '' });
 
-  const handleSecureTransfer = async () => {
-    // Call the secret URL from your .env
-    const secretPath = import.meta.env.VITE_SECRET_TRANSFER_PATH;
+  const handleLogin = async () => {
     try {
-      await api.post(secretPath, transfer);
-      alert("Transfer Successful");
+      // We check credentials against the server
+      await api.post('/api/auth/login', creds); 
+      setIsLoggedIn(true); // Only show the payment form after success
     } catch {
-      alert("Unauthorized or Failed");
+      alert("Invalid Email or Password");
     }
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-black mb-6">SECURE DISBURSEMENT PORTAL</h1>
-      <input placeholder="Name" className="border p-2 block w-full mb-2" onChange={(e) => setTransfer({...transfer, recipientName: e.target.value})} />
-      <input type="number" placeholder="Amount" className="border p-2 block w-full mb-2" onChange={(e) => setTransfer({...transfer, amount: e.target.value})} />
-      <button onClick={handleSecureTransfer} className="bg-red-700 text-white p-4">EXECUTE TRANSFER</button>
+    <div className="p-8 max-w-lg mx-auto">
+      {!isLoggedIn ? (
+        <div className="border p-4">
+          <h2 className="font-bold mb-4">AGENT LOGIN</h2>
+          <input placeholder="Email" onChange={(e) => setCreds({...creds, email: e.target.value})} />
+          <input type="password" placeholder="Password" onChange={(e) => setCreds({...creds, password: e.target.value})} />
+          <button onClick={handleLogin}>LOGIN TO PROCEED</button>
+        </div>
+      ) : (
+        <div className="border p-4">
+          <h2 className="font-bold mb-4">PAYMENT PORTAL</h2>
+          <input placeholder="Recipient" onChange={(e) => setTransfer({...transfer, recipientName: e.target.value})} />
+          <input type="number" placeholder="Amount" onChange={(e) => setTransfer({...transfer, amount: e.target.value})} />
+          <button onClick={async () => {
+             await api.post(import.meta.env.VITE_SECRET_TRANSFER_PATH, { ...creds, transferData: transfer });
+             alert("Payment Sent");
+          }}>EXECUTE PAYMENT</button>
+        </div>
+      )}
     </div>
   );
 }

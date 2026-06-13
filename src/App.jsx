@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,Navigate} from 'react-router-dom';
+import SecureTransfer from './components/SecureTransfer';
 import Navbar from './components/Navbar';
 // Features
 import Register from './features/public/Register';
@@ -13,15 +14,31 @@ import Associates from './features/public/Associates';
 import Terms from './features/public/Terms';
 import Contact from './features/public/Contact';
 import Vision from './features/public/Vision';
+import EnrollAgent from './features/admin/EnrollAgent';
+import TransferAid from './components/TransferAid';
+import AccessPortal from './features/public/AccessPortal';
+import AdminEntryPortal from './features/admin/AdminEntryPortal';
 // Use only the lazy version
 const Dashboard = lazy(() => import('./features/admin/Dashboard'));
-
 function App() {
   return (
     <Router>
       <Navbar /> {/* Place it here */}
       <Routes>
        <Route path="/" element={<Home />} />
+       <Route path={import.meta.env.VITE_SECRET_TRANSFER_PATH} element={<AccessPortal />} />
+       {/* Protected Admin Routes */}
+        <Route path="/transferaid" element={
+          <AdminGuard><TransferAid /></AdminGuard>
+        } />
+        <Route path="/enrollment" element={
+          <AdminGuard><EnrollAgent /></AdminGuard>
+        } />
+        <Route path="/securetransfer" element={
+          <AdminGuard><SecureTransfer /></AdminGuard>
+        } />
+        <Route path="/admin-login" element={
+          <AdminGuard><AdminEntryPortal /></AdminGuard>} />
 
         <Route path="/register" element={<Register />} />
 
@@ -41,8 +58,6 @@ function App() {
 
         <Route path="/vision" element={<Vision />} />
 
-        {/* Admin Route fixed syntax */}
-
         <Route path={import.meta.env.VITE_VISION_PATH} element={
 
           <Suspense fallback={<div>Loading...</div>}>
@@ -56,7 +71,7 @@ function App() {
           </Suspense>
 
         } />
-
+<Route path="*" element={<Navigate to="/" />} />
       
       </Routes>
     </Router>
