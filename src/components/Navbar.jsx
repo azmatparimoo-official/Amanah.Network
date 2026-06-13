@@ -13,26 +13,24 @@ export default function Navbar() {
     { to: "/contact", label: "Contact" },
     { to: "/vision", label: "Vision" },
     { to: "/donate", label: "Donate Portal" },
-    //{ to: "/request-aid", label: "Request Aid Portal" },
     { to: "/timeline", label: "Achievements" },
-    {to:"/terms", label:"Terms"}
+    { to: "/terms", label: "Terms" }
   ];
 
   return (
-    /* py-8 creates the 'Beautiful Deck' height, matching the logo size perfectly */
-    <nav className="relative bg-white border-b border-gray-100 py-8 px-6 md:px-12 lg:px-24 z-50">
-      <div className="flex justify-between items-center max-w-1400px mx-auto">
+    <nav className="relative bg-white border-b border-gray-100 h-24 px-6 md:px-12 lg:px-24 z-50 flex items-center">
+      <div className="flex justify-between items-center w-full max-w-1400px mx-auto h-full">
         
-       {/* Left: Logo & Branding */}
-      <Link to="/" className="flex items-center gap-3 group">
-        <img src={logo} alt="Amanah Network" className="h-12 w-auto object-contain" />
-        <div className="flex flex-col">
-      <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
-    Amanah</span>   
-      <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">
-      Network </span>       
-    </div>
-      </Link>
+       {/* Left: Logo & Branding - h-full makes it edge to edge */}
+       <Link to="/" className="flex items-center gap-3 group h-full">
+         <img src={logo} alt="Amanah Network" className="h-full w-auto py-2 object-contain" />
+         <div className="flex flex-col">
+           <span className="text-2xl font-black uppercase tracking-tighter leading-none text-[#284D3D]">
+             Amanah</span>   
+           <span className="text-[#C5A059] text-xs font-bold uppercase tracking-[0.2em]">
+             Network </span>      
+         </div>
+       </Link>
 
         {/* Mobile Hamburger */}
         <button 
@@ -42,13 +40,13 @@ export default function Navbar() {
           ☰
         </button>
 
-        {/* Desktop Links - Perfectly centered vertically against the logo */}
-        <div className="hidden md:flex gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
+        {/* Desktop Links - gap-4 lg:gap-8 prevents overlapping */}
+        <div className="hidden md:flex gap-4 lg:gap-8 uppercase font-bold text-[10px] tracking-[0.2em] text-gray-800 items-center">
           {navLinks.map((link, index) => (
             <Link 
               key={`${link.to}-${index}`} 
               to={link.to} 
-              className="hover:text-[#C5A059] transition-colors duration-300"
+              className="hover:text-[#C5A059] transition-colors duration-300 whitespace-nowrap"
             >
               {link.label}
             </Link>
@@ -58,7 +56,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden flex flex-col p-6 bg-white border-t border-gray-100 uppercase font-bold text-xs gap-6 mt-8 shadow-2xl">
+        <div className="absolute top-24 left-0 w-full md:hidden flex flex-col p-6 bg-white border-b border-gray-100 uppercase font-bold text-xs gap-6 shadow-2xl z-40">
           {navLinks.map((link, index) => (
             <Link 
               key={`${link.to}-${index}`} 
