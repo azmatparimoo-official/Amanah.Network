@@ -4,7 +4,7 @@ import api from '../../api';
 export default function Dashboard() {
   const [ledger, setLedger] = useState([]);
   const [analytics, setAnalytics] = useState({ totalDonated: 0, totalDisbursed: 0, balance: 0 });
-  
+  const [filter, setFilter] = useState({ from: '', to: '', actionType: 'ALL' });
   // NEW: State for filter and Transfer form
   const [dates, setDates] = useState({ from: '', to: '' });
   const [transfer, setTransfer] = useState({ recipientName: '', amount: '', note: '' });
@@ -17,7 +17,8 @@ export default function Dashboard() {
     try {
       const [analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/admin/analytics', { headers: getHeaders() }),
-        api.get(`/api/admin/ledger?from=${dates.from}&to=${dates.to}`, { headers: getHeaders() })
+        api.get(`/api/admin/ledger?from=${dates.from}&to=${dates.to}`, { headers: getHeaders() }),
+      api.get(`/api/admin/ledger?from=${filter.from}&to=${filter.to}&actionType=${filter.actionType}`, { headers: getHeaders() })      
       ]);
 
       setAnalytics(analyticsRes.data);
@@ -25,7 +26,7 @@ export default function Dashboard() {
     } catch (err) {
       console.error("Governance Sync Error:", err);
     }
-  }, [getHeaders, dates]);
+  }, [getHeaders, dates, filter]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -81,6 +82,11 @@ export default function Dashboard() {
             <input placeholder="Name" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, recipientName: e.target.value})} />
             <input type="number" placeholder="Amount" className="block w-full border p-2 mb-2" onChange={(e) => setTransfer({...transfer, amount: e.target.value})} />
             <button onClick={handleTransfer} className="bg-black text-white w-full py-2">SEND FUNDS</button>
+            <select className="border p-2" onChange={(e) => setFilter({...filter, actionType: e.target.value})}>
+            <option value="ALL">All Actions</option>
+            <option value="RECEIVED">Received</option>
+            <option value="SPENT">Spent</option>
+        </select>
         </div>
       </div>
 
