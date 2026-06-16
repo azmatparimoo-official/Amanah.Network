@@ -9,9 +9,7 @@ export default function Dashboard() {
   const [dates, setDates] = useState({ from: '', to: '' });
   
   // Local "Vault" state
-  const [isUnlocked, setIsUnlocked] = useState(
-    sessionStorage.getItem('dashboardKey') === import.meta.env.VITE_ADMIN_KEY
-  );
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [inputKey, setInputKey] = useState('');
 
   const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY; // Use Dashboard specific key
