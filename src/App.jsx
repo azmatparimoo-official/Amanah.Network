@@ -67,7 +67,7 @@ function App() {
           </Suspense>
 
         } />
-
+<Route path="*" element={<Home />} />
       
       </Routes>
     </Router>
