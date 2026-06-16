@@ -38,7 +38,10 @@ function App() {
           <AdminGuard><SecureTransfer /></AdminGuard>
         } />
         <Route path="/admin-login" element={
-          <AdminEntryPortal />} />
+          <AdminGuard>
+            <AdminEntryPortal />
+          </AdminGuard>
+        } />
 
         <Route path="/register" element={<Register />} />
 
