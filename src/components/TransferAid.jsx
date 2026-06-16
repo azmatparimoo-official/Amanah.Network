@@ -15,11 +15,16 @@ export default function TransferAid() {
 
   const handleTransfer = async () => {
     try {
-      // The backend should handle email logic and DB saving
-      await api.post('/api/admin/transfer', formData);
+      // Force current date at the moment of execution
+      const payload = {
+        ...formData,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      await api.post('/api/admin/transfer', payload);
       alert("Funds sent and confirmation email triggered!");
     } catch {
-      alert("Transfer failed. Please check the credentials.");
+      alert("Transfer failed. Please check the credentials or bank details.");
     }
   };
 
@@ -41,7 +46,13 @@ export default function TransferAid() {
     setFormData({...formData, amount: val});
   }} 
   className="border-2 p-2" 
-/>        <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="border-2 p-2" />
+/> 
+<input 
+  type="date" 
+  value={new Date().toISOString().split('T')[0]} 
+  disabled 
+  className="border-2 p-2 bg-gray-100 cursor-not-allowed text-gray-500" 
+/>
         <input placeholder="Account Number (Razorpay Verified)" onChange={(e) => setFormData({...formData, account: e.target.value})} className="border-2 p-2" />
         <input placeholder="IFSC Code" onChange={(e) => setFormData({...formData, ifsc: e.target.value})} className="border-2 p-2" />
         <input type="email" placeholder="Receiving Org Email" onChange={(e) => setFormData({...formData, email: e.target.value})} className="border-2 p-2" />
