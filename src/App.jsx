@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import SecureTransfer from './components/SecureTransfer';
 import Navbar from './components/Navbar';
+import { GovernanceGuard } from './components/GovernanceGaurd';
 // Features
 import Register from './features/public/Register';
 import Donate from './features/public/Donate';
@@ -32,15 +33,19 @@ function App() {
           <AdminGuard><TransferAid /></AdminGuard>
         } />
         <Route path="/enrollment" element={
-          <AdminGuard><EnrollAgent /></AdminGuard>
+          <GovernanceGuard>
+            <EnrollAgent />
+          </GovernanceGuard>
         } />
         <Route path="/securetransfer" element={
-          <AdminGuard><SecureTransfer /></AdminGuard>
+          <GovernanceGuard>
+            <SecureTransfer />
+          </GovernanceGuard>
         } />
         <Route path="/admin-login" element={
-          <AdminGuard>
+          <GovernanceGuard>
             <AdminEntryPortal />
-          </AdminGuard>
+          </GovernanceGuard>
         } />
 
         <Route path="/register" element={<Register />} />
