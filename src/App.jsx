@@ -62,11 +62,7 @@ function App() {
 
           <Suspense fallback={<div>Loading...</div>}>
 
-            <AdminGuard>
-
               <Dashboard />
-
-            </AdminGuard>
 
           </Suspense>
 
