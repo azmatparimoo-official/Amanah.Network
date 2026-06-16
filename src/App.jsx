@@ -7,7 +7,7 @@ import Register from './features/public/Register';
 import Donate from './features/public/Donate';
 import RequestAid from './features/public/RequestAid';
 import Timeline from './features/public/Timeline';
-import AdminGuard from './components/AdminGuard'; 
+// import AdminGuard from './components/AdminGuard'; 
 import Home from './features/public/Home';
 import Council from './features/public/Council';
 import Associates from './features/public/Associates';
@@ -29,7 +29,7 @@ function App() {
        <Route path={import.meta.env.VITE_SECRET_TRANSFER_PATH} element={<AccessPortal />} />
        {/* Protected Admin Routes */}
         <Route path="/transferaid" element={
-          <AdminGuard><TransferAid /></AdminGuard>
+          <TransferAid />
         } />
         <Route path="/enrollment" element={
           <GovernanceGuard>
