@@ -1,14 +1,21 @@
-// components/AdminGuard.jsx
 import { Navigate } from 'react-router-dom';
 
-export default function AdminGuard({ children }) {
-  // We check if the key was verified by the backend
-  const hasAccess = sessionStorage.getItem('governanceUnlocked') === 'true';
+const AdminGuard = ({ children }) => {
+    const hasGovAuth = sessionStorage.getItem('govAuth') === 'true';
+    const hasUserAuth = sessionStorage.getItem('userAuth') === 'true';
 
-  if (!hasAccess) {
-    // If not, force them to the home page immediately
-    return <Navigate to="/" replace />;
-  }
+    // 1. If no Governance Key, force them back to the start
+    if (!hasGovAuth) {
+        return <Navigate to="/Home" replace />;
+    }
 
-  return children;
-}
+    // 2. If they have the Key but haven't logged in, send them to Login
+    if (!hasUserAuth) {
+        return <Navigate to="/admin-login" replace />;
+    }
+
+    // 3. If both flags are true, allow access to TransferAid
+    return children;
+};
+
+export default AdminGuard;
