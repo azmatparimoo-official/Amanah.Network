@@ -1,20 +1,20 @@
 import { Navigate } from 'react-router-dom';
 
-const AdminGuard = ({ children }) => {
+const AdminGuard = ({ children, isLoginRoute = false }) => {
     const hasGovAuth = sessionStorage.getItem('govAuth') === 'true';
     const hasUserAuth = sessionStorage.getItem('userAuth') === 'true';
 
-    // 1. If no Governance Key, force them back to the start
-    if (!hasGovAuth) {
-        return <Navigate to="/Home" replace />;
+    const GOV_PATH = import.meta.env.VITE_SECRET_TRANSFER_PATH;
+    // 1. If trying to go to login, but haven't entered Gov Key, bounce to Gov Page
+    if (isLoginRoute) {
+        if (!hasGovAuth) return <Navigate to={GOV_PATH} replace />;
+        return children; // Let them see the login page
     }
 
-    // 2. If they have the Key but haven't logged in, send them to Login
-    if (!hasUserAuth) {
-        return <Navigate to="/admin-login" replace />;
-    }
-
-    // 3. If both flags are true, allow access to TransferAid
+    // 2. Standard guard for protected pages
+    if (!hasGovAuth) return <Navigate to={GOV_PATH} replace />;
+    if (!hasUserAuth) return <Navigate to="/admin-login" replace />;
+    
     return children;
 };
 
