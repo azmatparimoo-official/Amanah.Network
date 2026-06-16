@@ -31,8 +31,17 @@ export default function TransferAid() {
         <input placeholder="Receiving Org Name" onChange={(e) => setFormData({...formData, orgName: e.target.value})} className="border-2 p-2" />
         <textarea placeholder="Complete Address" onChange={(e) => setFormData({...formData, address: e.target.value})} className="border-2 p-2" />
         <input placeholder="CIA Number" onChange={(e) => setFormData({...formData, ciaNumber: e.target.value})} className="border-2 p-2" />
-        <input type="number" placeholder="Amount" onChange={(e) => setFormData({...formData, amount: e.target.value})} className="border-2 p-2" />
-        <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="border-2 p-2" />
+<input 
+  type="number" 
+  min="0" 
+  placeholder="Amount" 
+  value={formData.amount} // Controlled component
+  onChange={(e) => {
+    const val = Math.max(0, parseFloat(e.target.value) || 0);
+    setFormData({...formData, amount: val});
+  }} 
+  className="border-2 p-2" 
+/>        <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="border-2 p-2" />
         <input placeholder="Account Number (Razorpay Verified)" onChange={(e) => setFormData({...formData, account: e.target.value})} className="border-2 p-2" />
         <input placeholder="IFSC Code" onChange={(e) => setFormData({...formData, ifsc: e.target.value})} className="border-2 p-2" />
         <input type="email" placeholder="Receiving Org Email" onChange={(e) => setFormData({...formData, email: e.target.value})} className="border-2 p-2" />
