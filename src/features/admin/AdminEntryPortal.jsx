@@ -1,4 +1,3 @@
-// features/admin/AdminEntryPortal.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
@@ -9,18 +8,51 @@ export default function AdminEntryPortal() {
 
   const handleLogin = async () => {
     try {
+      // We are just waiting for the success status, so we don't need to assign it to 'res'
       await api.post('/api/auth/login', creds);
+      
+      sessionStorage.setItem('userAuth', 'true'); 
       navigate('/transferaid');
-    } catch { alert("Invalid Credentials"); }
+    } catch (err) { 
+      // It is good practice to log the error to see why it failed
+      console.error("Login failed:", err);
+      alert("Access Denied: Invalid Credentials"); 
+    }
   };
 
   return (
-    <div className="p-8">
-      <h2>AGENT LOGIN</h2>
-      <input placeholder="Email" onChange={(e) => setCreds({...creds, email: e.target.value})} />
-      <input type="password" placeholder="Password" onChange={(e) => setCreds({...creds, password: e.target.value})} />
-      <button onClick={handleLogin}>LOGIN</button>
-      <button onClick={() => navigate('/enrollment')}>Need to Register?</button>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white font-mono p-4">
+      <div className="w-full max-w-sm border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="text-2xl font-black mb-6 uppercase text-center text-[#284D3D]">Agent Login</h2>
+        
+        <div className="flex flex-col gap-4">
+          <input 
+            type="email"
+            className="border-2 border-black p-3 w-full"
+            placeholder="EMAIL ADDRESS" 
+            onChange={(e) => setCreds({...creds, email: e.target.value})} 
+          />
+          <input 
+            type="password" 
+            className="border-2 border-black p-3 w-full"
+            placeholder="ACCESS PASSWORD" 
+            onChange={(e) => setCreds({...creds, password: e.target.value})} 
+          />
+          <button 
+            onClick={handleLogin}
+            className="bg-black text-white py-3 font-bold uppercase hover:bg-[#284D3D] transition-colors"
+          >
+            Authorize Entry
+          </button>
+        </div>
+
+        <button 
+          onClick={() => navigate('/enrollment')}
+          className="mt-6 text-xs text-gray-500 underline uppercase tracking-widest w-full text-center"
+        >
+          Request Agent Enrollment
+        </button>
+      </div>
     </div>
   );
 }

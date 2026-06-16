@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import SecureTransfer from './components/SecureTransfer';
 import Navbar from './components/Navbar';
 import { GovernanceGuard } from './components/GovernanceGaurd';
 // Features
@@ -35,11 +34,6 @@ function App() {
         <Route path="/enrollment" element={
           <GovernanceGuard>
             <EnrollAgent />
-          </GovernanceGuard>
-        } />
-        <Route path="/securetransfer" element={
-          <GovernanceGuard>
-            <SecureTransfer />
           </GovernanceGuard>
         } />
         <Route path="/admin-login" element={
