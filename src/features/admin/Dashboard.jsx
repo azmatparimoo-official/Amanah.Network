@@ -2,15 +2,25 @@ import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
 
 export default function Dashboard() {
+  // 1. STATE MANAGEMENT (Hooks must be at the top level)
   const [ledger, setLedger] = useState([]);
   const [analytics, setAnalytics] = useState({ totalDonated: 0, totalSpent: 0, balance: 0 });
   const [filter, setFilter] = useState({ from: '', to: '', actionType: 'ALL' });
   const [dates, setDates] = useState({ from: '', to: '' });
+  
+  // Local "Vault" state
+  const [isUnlocked, setIsUnlocked] = useState(
+    sessionStorage.getItem('dashboardKey') === import.meta.env.VITE_DASHBOARD_SECRET_KEY
+  );
+  const [inputKey, setInputKey] = useState('');
 
-  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY;
+  const MASTER_KEY = import.meta.env.VITE_DASHBOARD_SECRET_KEY; // Use Dashboard specific key
   const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
+  // 2. FETCH DATA LOGIC
   const fetchDashboardData = useCallback(async () => {
+    if (!isUnlocked) return; // Don't fetch if not unlocked
+
     try {
       const [analyticsRes, ledgerRes] = await Promise.all([
         api.get('/api/admin/analytics', { headers: getHeaders() }),
@@ -24,15 +34,42 @@ export default function Dashboard() {
     } catch (err) {
       console.error("Sync Error:", err);
     }
-  }, [getHeaders, dates, filter]);
+  }, [getHeaders, dates, filter, isUnlocked]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    if (!isUnlocked) return;
+
+    const fetchData = async () => {
       await fetchDashboardData();
     };
-    fetchInitialData();
-  }, [fetchDashboardData]); 
 
+    fetchData();
+  }, [fetchDashboardData, isUnlocked]);
+
+  // 3. THE VAULT GATE
+  const handleUnlock = () => {
+    if (inputKey === import.meta.env.VITE_DASHBOARD_SECRET_KEY) {
+      sessionStorage.setItem('dashboardKey', inputKey);
+      setIsUnlocked(true);
+    } else {
+      alert("Invalid Governance Key");
+    }
+  };
+
+  if (!isUnlocked) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen font-mono">
+        <h1 className="text-2xl mb-4 font-bold">DASHBOARD VAULT</h1>
+        <input 
+          type="password" 
+          className="border-2 border-black p-2 mb-2 w-64" 
+          onChange={(e) => setInputKey(e.target.value)} 
+          placeholder="Enter Governance Key"
+        />
+        <button onClick={handleUnlock} className="bg-black text-white px-6 py-2 uppercase font-bold">Unlock Access</button>
+      </div>
+    );
+  }
   return (
     <div className="p-8 max-w-6xl mx-auto font-mono bg-white min-h-screen">
       <header className="mb-10 border-b-2 border-black pb-6">
