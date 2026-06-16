@@ -22,7 +22,8 @@ export default function TransferAid() {
       if (response.data.valid) {
         alert("Bank account verified successfully!");
       }
-    } catch {
+    } catch (error) {
+      console.error("Verification error:", error);
       alert("Invalid Bank Details. Please check your input.");
     }
   }
@@ -37,8 +38,9 @@ export default function TransferAid() {
 
       await api.post('/api/admin/transfer', payload);
       alert("Funds sent and confirmation email triggered!");
-    } catch {
-      alert("Transfer failed. Please check the credentials or bank details.");
+    } catch (error) {
+      console.error("Transfer error:", error);
+      alert(`Transfer failed: ${error.response?.data?.error || error.message}`);
     }
   };
 
