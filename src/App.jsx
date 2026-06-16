@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route,Navigate} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import SecureTransfer from './components/SecureTransfer';
 import Navbar from './components/Navbar';
 // Features
@@ -71,7 +71,7 @@ function App() {
           </Suspense>
 
         } />
-<Route path="*" element={<Navigate to="/" />} />
+
       
       </Routes>
     </Router>
