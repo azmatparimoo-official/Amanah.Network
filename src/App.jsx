@@ -15,7 +15,7 @@ import Terms from './features/public/Terms';
 import Contact from './features/public/Contact';
 import Vision from './features/public/Vision';
 import EnrollAgent from './features/admin/EnrollAgent';
-import TransferAid from './components/TransferAid';
+import TransferAid from '../src/components/TransferAid';
 import AccessPortal from './features/public/AccessPortal';
 import AdminEntryPortal from './features/admin/AdminEntryPortal';
 // Use only the lazy version
