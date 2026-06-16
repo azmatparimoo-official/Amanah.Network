@@ -10,11 +10,11 @@ export default function Dashboard() {
   
   // Local "Vault" state
   const [isUnlocked, setIsUnlocked] = useState(
-    sessionStorage.getItem('dashboardKey') === import.meta.env.VITE_DASHBOARD_SECRET_KEY
+    sessionStorage.getItem('dashboardKey') === import.meta.env.VITE_ADMIN_KEY
   );
   const [inputKey, setInputKey] = useState('');
 
-  const MASTER_KEY = import.meta.env.VITE_DASHBOARD_SECRET_KEY; // Use Dashboard specific key
+  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY; // Use Dashboard specific key
   const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
   // 2. FETCH DATA LOGIC
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   // 3. THE VAULT GATE
   const handleUnlock = () => {
-    if (inputKey === import.meta.env.VITE_DASHBOARD_SECRET_KEY) {
+    if (inputKey === import.meta.env.VITE_ADMIN_KEY) {
       sessionStorage.setItem('dashboardKey', inputKey);
       setIsUnlocked(true);
     } else {
