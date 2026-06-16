@@ -12,7 +12,21 @@ export default function TransferAid() {
     ifscCode: '',
     email: ''
   });
-
+  const verifyBankDetails = async () => {
+  if (formData.accountNumber.length > 8 && formData.ifscCode.length === 11) {
+    try {
+      const response = await api.post('/api/verify-bank', {
+        accountNumber: formData.accountNumber,
+        ifsc: formData.ifscCode
+      });
+      if (response.data.valid) {
+        alert("Bank account verified successfully!");
+      }
+    } catch {
+      alert("Invalid Bank Details. Please check your input.");
+    }
+  }
+};
   const handleTransfer = async () => {
     try {
       // Force current date at the moment of execution
@@ -53,9 +67,21 @@ export default function TransferAid() {
   disabled 
   className="border-2 p-2 bg-gray-100 cursor-not-allowed text-gray-500" 
 />
-        <input placeholder="Account Number (Razorpay Verified)" onChange={(e) => setFormData({...formData, account: e.target.value})} className="border-2 p-2" />
-        <input placeholder="IFSC Code" onChange={(e) => setFormData({...formData, ifsc: e.target.value})} className="border-2 p-2" />
-        <input type="email" placeholder="Receiving Org Email" onChange={(e) => setFormData({...formData, email: e.target.value})} className="border-2 p-2" />
+       <input 
+  placeholder="Account Number" 
+  value={formData.accountNumber}
+  onChange={(e) => setFormData({...formData, accountNumber: e.target.value})}
+  onBlur={verifyBankDetails} // Verification happens here
+  className="border-2 p-2" 
+/>
+<input 
+  placeholder="IFSC Code" 
+  value={formData.ifscCode}
+  onChange={(e) => setFormData({...formData, ifscCode: e.target.value})}
+  onBlur={verifyBankDetails} // Verification happens here
+  className="border-2 p-2" 
+/>
+<input type="email" placeholder="Receiving Org Email" onChange={(e) => setFormData({...formData, email: e.target.value})} className="border-2 p-2" />
         
         <button 
           onClick={handleTransfer} 
