@@ -9,7 +9,7 @@ export default function AccessPortal() {
   const handleUnlock = () => {
     if (key === import.meta.env.VITE_GOVERNANCE_KEY) {
       sessionStorage.setItem('governanceUnlocked', 'true');
-      navigate('/transferaid'); // Redirect to the portal
+      navigate('/admin-login'); // Redirect to the portal
     } else {
       alert("Invalid Governance Key");
     }
