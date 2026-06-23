@@ -5,5 +5,9 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
 withCredentials: true, // Include cookies for session management
 });
-
+api.interceptors.request.use(config => {
+  const key = localStorage.getItem('governanceKey'); // Store it after unlock
+  if (key) config.headers['x-governance-key'] = key;
+  return config;
+});
 export default api;

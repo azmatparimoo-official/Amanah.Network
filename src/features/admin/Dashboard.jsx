@@ -11,10 +11,6 @@ export default function Dashboard() {
   // Local "Vault" state
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [inputKey, setInputKey] = useState('');
-
-  //const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY; // Use Dashboard specific key
-//  const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
-
   // 2. FETCH DATA LOGIC
   useEffect(() => {
     // Define the fetch logic directly inside the effect
@@ -22,9 +18,15 @@ export default function Dashboard() {
       if (!isUnlocked) return;
 
       try {
+        const config = {
+      headers: {
+        'x-governance-key': inputKey 
+      }
+    };
         const [analyticsRes, ledgerRes] = await Promise.all([
-          api.get('/api/admin/analytics'),
+          api.get('/api/admin/analytics', config),
           api.get(`/api/admin/ledger`, { 
+            ...config,
             params: { from: dates.from, to: dates.to, actionType: filter.actionType } 
           })
         ]);
@@ -39,7 +41,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [isUnlocked, dates.from, dates.to, filter.actionType]); // Only re-run if these specific values change
+  }, [isUnlocked, dates.from, dates.to, filter.actionType , inputKey]); // Only re-run if these specific values change
 
   useEffect(() => 
     {
