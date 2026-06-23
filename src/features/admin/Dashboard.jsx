@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../api';
 
 export default function Dashboard() {
@@ -12,47 +12,59 @@ export default function Dashboard() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [inputKey, setInputKey] = useState('');
 
-  const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY; // Use Dashboard specific key
-  const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
+  //const MASTER_KEY = import.meta.env.VITE_ADMIN_KEY; // Use Dashboard specific key
+//  const getHeaders = useCallback(() => ({ 'use-secret-key': MASTER_KEY }), [MASTER_KEY]);
 
   // 2. FETCH DATA LOGIC
-  const fetchDashboardData = useCallback(async () => {
-    if (!isUnlocked) return; // Don't fetch if not unlocked
-
-    try {
-      const [analyticsRes, ledgerRes] = await Promise.all([
-        api.get('/api/admin/analytics', { headers: getHeaders() }),
-        api.get(`/api/admin/ledger`, { 
-          headers: getHeaders(), 
-          params: { from: dates.from, to: dates.to, actionType: filter.actionType } 
-        })
-      ]);
-      setAnalytics(analyticsRes.data);
-      setLedger(ledgerRes.data);
-    } catch (err) {
-      console.error("Sync Error:", err);
-    }
-  }, [getHeaders, dates, filter, isUnlocked]);
-
   useEffect(() => {
-    if (!isUnlocked) return;
-
+    // Define the fetch logic directly inside the effect
     const fetchData = async () => {
-      await fetchDashboardData();
+      if (!isUnlocked) return;
+
+      try {
+        const [analyticsRes, ledgerRes] = await Promise.all([
+          api.get('/api/admin/analytics'),
+          api.get(`/api/admin/ledger`, { 
+            params: { from: dates.from, to: dates.to, actionType: filter.actionType } 
+          })
+        ]);
+        setAnalytics(analyticsRes.data);
+        setLedger(ledgerRes.data);
+      } catch (err) {
+        console.error("Sync Error:", err);
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setIsUnlocked(false);
+        }
+      }
     };
 
     fetchData();
-  }, [fetchDashboardData, isUnlocked]);
+  }, [isUnlocked, dates.from, dates.to, filter.actionType]); // Only re-run if these specific values change
 
-  // 3. THE VAULT GATE
-  const handleUnlock = () => {
-    if (inputKey === import.meta.env.VITE_ADMIN_KEY) {
-      sessionStorage.setItem('dashboardKey', inputKey);
+  useEffect(() => 
+    {
+    const checkAccess = async () => {
+    try {
+      // Check backend to see if the session is still active
+      await api.get('/api/admin/check-access'); 
       setIsUnlocked(true);
-    } else {
-      alert("Invalid Governance Key");
+    } catch  {
+      setIsUnlocked(false);
     }
   };
+  checkAccess();
+}, []);
+  // 3. THE VAULT GATE
+  const handleUnlock = async () => {
+  try {
+    const response = await api.post('/api/admin/verify-vault', { key: inputKey });
+    if (response.data.unlocked) {
+      setIsUnlocked(true);
+    }
+  } catch (err) {
+    alert("Invalid Governance Key",err);
+  }
+};
 
   if (!isUnlocked) {
     return (
